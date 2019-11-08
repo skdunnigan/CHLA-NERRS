@@ -99,6 +99,6 @@ ggplot(data = chla_exo, aes(x = datetime)) +
   labs(x = "",
        y = chla_y_title,
        title = paste0("Chlorophyll Tank Study ", rundate),
-       subtitle = paste0("Slope correction = ", corr),
+       # subtitle = paste0("Slope correction = ", corr),
        caption = "Dashed line is EXO2 chlorophyll and solid is from extracted chlorophyll")
 ggsave(file = paste0("output/plot_", rundate,"_CHLa.png"), dpi = 120)
