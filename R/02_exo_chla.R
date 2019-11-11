@@ -1,55 +1,39 @@
-# bring in exo data
-exo1 <- readr::read_csv(here::here('data', '2019-08-20_exo.csv')) %>%
+# script to read in all extracted chlorophyll data files and exo data files
+
+# ----01 read in all files with extracted chlorophyll data----
+files1 <- list.files(here::here('output', 'chla_ext'),
+                     pattern = "*chla.csv", full.names = TRUE)
+chla_tbl <- sapply(files1, readr::read_csv, simplify = FALSE) %>%
+  dplyr::bind_rows(.id = "id") %>%
   janitor::clean_names()
-exo2 <- readr::read_csv(here::here('data', '2019-10-22_exo.csv')) %>%
+
+# redo table to remove excess information
+chla_tbl <- chla_tbl %>%
+  dplyr::select(datetime, chla_ugl, dil_fact_fluor)
+
+# ----02 read in all files with exo data during tank experiments----
+files2 <- list.files(here::here('data', 'exo'),
+                     pattern = "*_exo.csv", full.names = TRUE)
+exo_tbl <- sapply(files2, readr::read_csv, simplify = FALSE) %>%
+  dplyr::bind_rows(.id = "id") %>%
   janitor::clean_names()
 
+# reorganize exo table to redo some column names and set datetime column
+exo_tbl <- exo_tbl %>%
+  dplyr::mutate(date = as.Date(date_mm_dd_yyyy, format = "%m/%d/%Y"),
+                datetime = lubridate::ymd_hms(paste(date, time_hh_mm_ss)),
+                temp = temp_u_00b0_c,
+                spcond = sp_cond_m_s_cm,
+                chlorophyll_ugl = chlorophyll_u_00b5_g_l) %>%
+  dplyr::select(-date_mm_dd_yyyy, -time_hh_mm_ss, -time_fract_sec,
+                -fault_code, -temp_u_00b0_c, -chlorophyll_u_00b5_g_l,
+                -sp_cond_m_s_cm)
+# remove files
+rm(files1, files2)
 
-# ---------------------
-# wrangle EXO data
-# ---------------------
-# bind together the exo data
-# fix the date and times to combine
-# remove unnecessary columns
-exo <- dplyr::bind_rows(exo1, exo2) %>%
-  mutate(date = as.Date(date_mm_dd_yyyy, format = "%m/%d/%Y"),
-         datetime = lubridate::ymd_hms(paste(date, time_hh_mm_ss))
-  ) %>%
-  select(-date_mm_dd_yyyy, -time_hh_mm_ss, -time_fract_sec, -fault_code)
-rm(exo1, exo2)
+# ----03 bind data together based on datetime stamps----
+chla_exo <- left_join(chla_tbl, exo_tbl, by = "datetime") %>%
+  mutate(mmdd = format(datetime,"%m-%d"))
 
-# ---------------------
-# merge exo and chla data
-# ---------------------
-
-chla_exo <- left_join(chla_corr, exo, by = "datetime")
-
-# ---------------------
-# create plots
-# ---------------------
-
-# plot chla ext vs exo
-chla_y_title <- expression(paste("Chlorophyll ", italic("a "), mu*"g/L"))
-ggplot(data = chla_exo, aes(x = datetime)) +
-  geom_point(aes(y = chla_ugl), size = 2) +
-  geom_line(aes(y = chla_ugl), size = 1) +
-  geom_line(aes(y = chlorophyll_u_00b5_g_l),
-            linetype = "dashed", size = 1) +
-  geom_point(aes(y = chlorophyll_u_00b5_g_l), size = 2) +
-  theme_bw() +
-  theme(axis.text = element_text(color = "black", size = 12),
-        axis.title = element_text(color = "black", size = 12),
-        plot.caption = element_text(size = 8, face = "italic"),
-        plot.subtitle = element_text(size = 10, face = "italic")) +
-  labs(x = "",
-       y = chla_y_title,
-       title = paste0("Chlorophyll Tank Study ", rundate),
-       # subtitle = paste0("Slope correction = ", corr),
-       caption = "Dashed line is EXO2 chlorophyll and solid is from extracted chlorophyll")
-ggsave(file = paste0("output/plot_", rundate,"_CHLa.png"), dpi = 120)
-
-ggplot(data = chla_exo, aes(x = chlorophyll_u_00b5_g_l, y = chla_ugl)) +
-  geom_point(size = 2) +
-  geom_smooth(method = "lm") +
-  theme_bw()
-# broom::tidy(lm(chlorophyll_u_00b5_g_l ~ chla_ugl, data = chla_exo))
+# remove exo and extraction tables
+rm(chla_tbl, exo_tbl)
