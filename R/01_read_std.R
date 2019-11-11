@@ -1,10 +1,15 @@
+
 # ----00 !!EDIT THIS DATE----
-rundate <- c("2019-08-20")
+rundate <- c("2019-10-22")
 
 # ----01 read in data from standards----
 # bring in standard dataset for corrections
 std <- readr::read_csv(here::here('data', 'std_run.csv')) %>%
   janitor::clean_names()
+
+# set date as a date format
+std <- std %>%
+  dplyr::mutate(datetime = as.Date(datetime, format = "%m/%d/%Y"))
 
 # ----02 get calculations for chlorophyll in form of slope----
 
@@ -25,17 +30,20 @@ std %>%
   theme_bw() +
   labs(title = paste0("Chlorophyll Tank Study Standard ", rundate),
        subtitle = paste0("Slope correction = ", corr))
-ggsave(file = here::here('output', 'chla_ext', paste0("plot_std_", rundate,"_CHLa.png")), dpi = 120)
+ggsave(file = here::here('output', 'chla_ext', paste0(rundate,"_plot_std_CHLa.png")),
+       height = 4, width = 6, dpi = 120)
 
 std %>%
   filter(datetime == rundate) %>%
   ggpubr::ggscatter(x = "std_conc", y = "fluor_rfu",
-                    add = "reg.line") +
-  stat_cor(label.y = 199) +
+                    add = "reg.line") + # add regression line
+  stat_cor(
+    aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.y = 199) +
   stat_regline_equation(label.y = 180) +
   theme_bw() +
   labs(title = paste0("Chlorophyll Tank Study Standard ", rundate))
-ggsave(file = here::here('output', 'chla_ext', paste0("plot_std_eq_", rundate, "_CHLa.png")), dpi = 120)
+ggsave(file = here::here('output', 'chla_ext', paste0(rundate, "_plot_std_eq_CHLa.png")),
+       height = 4, width = 6, dpi = 120)
 
 # ----03 bring in raw fluorometric data----
 chla <- readr::read_csv(here::here('data', 'chla_raw', paste0(rundate, '_chla_raw.csv'))) %>%
@@ -47,18 +55,22 @@ chla <- readr::read_csv(here::here('data', 'chla_raw', paste0(rundate, '_chla_ra
 # blank corr = fluor - FB fluor
 # dilution factor fluor = blank corr
 chla_corr <- chla %>%
-  dplyr::mutate(date = as.Date(date_mm_dd_yyyy, format = "%m/%d/%Y"),
+  filter(duplicate == 0) %>%
+  dplyr::mutate(date_sampled = as.Date(date_mm_dd_yyyy, format = "%m/%d/%Y"),
                 date_analyzed = as.Date(date_analyzed, format = "%m/%d/%Y"),
                 time = as.character(time_hh_mm_ss),
                 time2 = substr(time, nchar(time) - 8, nchar(time)),
-                datetime = paste(date, time2),
+                datetime = paste(date_sampled, time2),
                 datetime = lubridate::ymd_hms(datetime),
                 blank_corr_fluor = (fluor_rfu - fb_fluor_rfu),
                 dil_fact_fluor = (blank_corr_fluor * (vol_ext/vol_filter)),
                 chla_ugl = (dil_fact_fluor / corr)
                 ) %>%
-  dplyr::select(-date_mm_dd_yyyy, -time_hh_mm_ss, -date, -time, -time2)
+  dplyr::select(-date_mm_dd_yyyy, -time_hh_mm_ss, -time, -time2)
 
 
 # ----05 export as csv with all the calculations----
 write.csv(chla_corr, here::here('output', 'chla_ext', paste0(rundate, '_chla.csv')))
+
+# ----06 clear environment----
+rm(rundate, std, df, corr, chla, chla_corr)
