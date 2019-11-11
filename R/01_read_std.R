@@ -1,9 +1,3 @@
-library(tidyverse)
-library(lubridate)
-library(here)
-library(janitor)
-library(broom)
-
 # ----00 !!EDIT THIS DATE----
 rundate <- c("2019-08-20")
 
@@ -32,6 +26,16 @@ std %>%
   labs(title = paste0("Chlorophyll Tank Study Standard ", rundate),
        subtitle = paste0("Slope correction = ", corr))
 ggsave(file = here::here('output', 'chla_ext', paste0("plot_std_", rundate,"_CHLa.png")), dpi = 120)
+
+std %>%
+  filter(datetime == rundate) %>%
+  ggpubr::ggscatter(x = "std_conc", y = "fluor_rfu",
+                    add = "reg.line") +
+  stat_cor(label.y = 199) +
+  stat_regline_equation(label.y = 180) +
+  theme_bw() +
+  labs(title = paste0("Chlorophyll Tank Study Standard ", rundate))
+ggsave(file = here::here('output', 'chla_ext', paste0("plot_std_eq_", rundate, "_CHLa.png")), dpi = 120)
 
 # ----03 bring in raw fluorometric data----
 chla <- readr::read_csv(here::here('data', 'chla_raw', paste0(rundate, '_chla_raw.csv'))) %>%
