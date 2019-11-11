@@ -34,12 +34,43 @@ This code reads in each of the extracted chlorophyll files in the 'output/chla_e
 
 This code creates plots! Lots of plots which are exported into the `/output` folder. There are currently nine sections of code:
 
-1. run script to create dataframe - *this sources the `02_exo_chla.R` code to produce the `chla_exo` dataframe.*
-2. create axis titles for figures - *I want the micrograms per liter written out with the correct symbols.*
-3. plot chla ext vs exo for single date using LOOP - *this plots the extracted vs exo total algae sensor chlorophyll data for a single date using a for LOOP function. It produces several plots associated with each date of a tank experiment. NOTE: this does not produce a plot for the ISCO-related data.*
-4. put tank studies onto one figure with R2, p-value, and linear equation - *this combines the values from all the tank studies into one extracted vs. exo total algae sensor chlorophyll data plot with R2, p-value, confidence interval, and linear equation*
-5. same figure as number 04, but with colors applied to the date points - *applies color to denote separate runs of the tank experiment (by date) but still produces a similar plot to the fourth step.*
-6. facet by date in tank studies with unique equations/lines each - *similar to the previous, except that the dates are also faceted into their own subplot with the associated R2, p-value, and linear equations included.*
-7. isco only figure comparison - *this step will likely take on something similar to step number 3, however at the moment, 2019-11-11, there is only one isco comparison with data and thus this plot is only showing that day. Plot includes R2, p-value, confidence interval, and linear equation.*
-8. isco and tank comparison - *combines all data (tank and isco) into one plot with R2, p-value, confidence interval, and linear equation with colors denoting the method.*
-9. isco and tank side-by-side comparison - *data is faceted by method subplot*
+**1.  run script to create dataframe -** 
+this sources the `02_exo_chla.R` code to produce the `chla_exo` dataframe.
+
+**2.  create axis titles for figures -** 
+I want the micrograms per liter written out with the correct symbols.
+
+**3.  plot chla ext vs exo for single date using LOOP -**
+this plots the extracted vs exo total algae sensor chlorophyll data for a single date using a for LOOP function. It produces several plots associated with each date of a tank experiment. *NOTE: this does not produce a plot for the ISCO-related data.*
+
+![03 plot example](output/10-22_tank_chla.png)
+
+**4.  put tank studies onto one figure with R2, p-value, and linear equation -** 
+this combines the values from all the tank studies into one extracted vs. exo total algae sensor chlorophyll data plot with R2, p-value, confidence interval, and linear equation
+
+![04 plot example](output/tank_plot_CHLa.png)
+
+**5.  same figure as number 04, but with colors applied to the date points -** 
+applies color to denote separate runs of the tank experiment (by date) but still produces a similar plot to the fourth step.
+
+![05 plot example](output/tank_plot_color_CHLa.png)
+
+**6.  facet by date in tank studies with unique equations/lines each -** 
+similar to the previous, except that the dates are also faceted into their own subplot with the associated R2, p-value, and linear equations included.
+
+![06 plot example](output/tank_facet_plot_CHLa.png)
+
+**7.  isco only figure comparison -**
+this step will likely take on something similar to step number 3, however at the moment, 2019-11-11, there is only one isco comparison with data and thus this plot is only showing that day. Plot includes R2, p-value, confidence interval, and linear equation.
+
+![07 plot example](output/isco_plot_CHLa.png)
+
+**8.  isco and tank comparison -**
+combines all data (tank and isco) into one plot with R2, p-value, confidence interval, and linear equation with colors denoting the method.
+
+![08 plot example](output/iscotank_plot_CHLa.png)
+
+**9.  isco and tank side-by-side comparison -**
+data is faceted by method subplot
+
+![09 plot example](output/iscotank_facet_plot_CHLa.png)
