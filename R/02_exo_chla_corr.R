@@ -89,6 +89,28 @@ ggpubr::ggscatter(y = "chlorophyll_ugl", x = "chla_ugl",
 ggsave(file = here::here('output', 'tank_plot_CHLa.png'),
        height = 4, width = 6, dpi = 120)
 
+# same figure as above but with colors applied
+chla_exo %>%
+  ggpubr::ggscatter(y = "chlorophyll_ugl", x = "chla_ugl", color = "mmdd",
+                    add = "reg.line", conf.int = TRUE, # add regression line and confidence interval
+                    add.params = list(color = "black", fill = "grey")) + # adjust line and CI colors
+  scale_color_brewer(name = "Date Sampled", type = "qual", palette = "Set1") +
+  stat_cor(
+    aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.y = 10.0) + # add R2 and p value
+  stat_regline_equation(label.y = 9.5) + # add linear equation
+  theme_bw() +
+  theme(legend.position = "bottom",
+        axis.text = element_text(color = "black", size = 12),
+        axis.title = element_text(color = "black", size = 12),
+        plot.caption = element_text(size = 8, face = "italic"),
+        plot.subtitle = element_text(size = 10, face = "italic")) +
+  labs(y = chla_exo_title,
+       x = chla_extr_title,
+       title = "Chlorophyll Comparison",
+       subtitle = "Tank Experiments")
+ggsave(file = here::here('output', 'tank_plot_color_CHLa.png'),
+       height = 4, width = 6, dpi = 120)
+
 # facet by date in tank studies
 chla_exo %>%
   ggplot(aes(y = chlorophyll_ugl, x = chla_ugl, color = mmdd)) +
