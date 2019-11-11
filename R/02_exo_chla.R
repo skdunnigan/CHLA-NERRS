@@ -9,9 +9,20 @@ chla_tbl <- sapply(files1, readr::read_csv, simplify = FALSE) %>%
 
 # redo table to remove excess information
 chla_tbl <- chla_tbl %>%
-  dplyr::select(datetime, chla_ugl, dil_fact_fluor)
+  dplyr::select(datetime, date_analyzed, chla_ugl, dil_fact_fluor)
 
-# ----02 read in all files with exo data during tank experiments----
+# ----02 add data dictionary information----
+data_dict <- readr::read_csv(here::here('data', 'data_dictionary.csv')) %>%
+  janitor::clean_names()
+
+data_dict <- data_dict %>%
+  dplyr::mutate(date_analyzed = as.Date(date_analyzed, format = "%m/%d/%Y"))
+
+# bind with chla_tbl
+chla_tbl_long <- left_join(chla_tbl, data_dict, by = "date_analyzed") %>%
+  dplyr::select(-run, -sample_location)
+
+# ----03 read in all files with exo data during tank experiments----
 files2 <- list.files(here::here('data', 'exo'),
                      pattern = "*_exo.csv", full.names = TRUE)
 exo_tbl <- sapply(files2, readr::read_csv, simplify = FALSE) %>%
@@ -31,9 +42,10 @@ exo_tbl <- exo_tbl %>%
 # remove files
 rm(files1, files2)
 
-# ----03 bind data together based on datetime stamps----
-chla_exo <- left_join(chla_tbl, exo_tbl, by = "datetime") %>%
+# ----04 bind data together based on datetime stamps----
+chla_exo <- left_join(chla_tbl_long, exo_tbl, by = "datetime") %>%
   mutate(mmdd = format(datetime,"%m-%d"))
 
 # remove exo and extraction tables
-rm(chla_tbl, exo_tbl)
+rm(chla_tbl, chla_tbl_long, exo_tbl, data_dict)
+
