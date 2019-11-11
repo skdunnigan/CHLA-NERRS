@@ -130,7 +130,7 @@ chla_exo %>%
   ggpubr::ggscatter(y = "chlorophyll_ugl", x = "chla_ugl", color = "method",
                     add = "reg.line", conf.int = TRUE, # add regression line and confidence interval
                     add.params = list(color = "black", fill = "grey")) + # adjust line and CI colors
-  scale_color_brewer(name = "Date Sampled", type = "qual", palette = "Set1") +
+  scale_color_brewer(name = "Method", type = "qual", palette = "Set1") +
   stat_cor(
     aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.y = 25) + # add R2 and p value
   stat_regline_equation(label.y = 23) + # add linear equation
