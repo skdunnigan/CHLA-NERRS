@@ -50,23 +50,19 @@ chla <- readr::read_csv(here::here('data', 'chla_raw', paste0(rundate, '_chla_ra
   janitor::clean_names()
 
 # ----04 use the corr value to calculate chlorophyll values----
-# extraction data
-# fluorescence_in data
-# blank corr = fluor - FB fluor
-# dilution factor fluor = blank corr
 chla_corr <- chla %>%
-  filter(duplicate == 0) %>%
+  filter(duplicate == 0) %>% # some data has duplicates, we dont want those
   dplyr::mutate(date_sampled = as.Date(date_mm_dd_yyyy, format = "%m/%d/%Y"),
                 date_analyzed = as.Date(date_analyzed, format = "%m/%d/%Y"),
                 time = as.character(time_hh_mm_ss),
                 time2 = substr(time, nchar(time) - 8, nchar(time)),
                 datetime = paste(date_sampled, time2),
                 datetime = lubridate::ymd_hms(datetime),
-                blank_corr_fluor = (fluor_rfu - fb_fluor_rfu),
-                dil_fact_fluor = (blank_corr_fluor * (vol_ext/vol_filter)),
-                chla_ugl = (dil_fact_fluor / corr)
+                blank_corr_fluor = (fluor_rfu - fb_fluor_rfu), # subtract fluorescence from blank
+                dil_fact_fluor = (blank_corr_fluor * (vol_ext/vol_filter)), # multiply the blank corrected rfu by (extracted/filtered)
+                chla_ugl = (dil_fact_fluor / corr) # divide this dilution corrected rfu by the correlation (slope) value of standards
                 ) %>%
-  dplyr::select(-date_mm_dd_yyyy, -time_hh_mm_ss, -time, -time2)
+  dplyr::select(-date_mm_dd_yyyy, -time_hh_mm_ss, -time, -time2) # remove all the crazy time-related mutations
 
 
 # ----05 export as csv with all the calculations----
