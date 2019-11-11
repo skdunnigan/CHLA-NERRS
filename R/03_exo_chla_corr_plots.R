@@ -155,7 +155,7 @@ chla_exo %>%
   stat_cor(
     aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.y = 13.8) +
   stat_regline_equation(label.y = 12.8) +
-  facet_wrap(~method) +
+  facet_wrap(~method, scales = "free_x") +
   theme_classic2() +
   theme(legend.position = "none",
         axis.text = element_text(color = "black", size = 12),
