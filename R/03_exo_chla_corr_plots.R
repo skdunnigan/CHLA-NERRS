@@ -1,50 +1,13 @@
-# ----01 read in all files with extracted chlorophyll data----
-files1 <- list.files(here::here('output', 'chla_ext'),
-                    pattern = "*chla.csv", full.names = TRUE)
-chla_tbl <- sapply(files1, readr::read_csv, simplify = FALSE) %>%
-  dplyr::bind_rows(.id = "id") %>%
-  janitor::clean_names()
+# ----01 run script to create dataframe----
+source('R/02_exo_chla.R')
 
-# redo table to remove excess information
-chla_tbl <- chla_tbl %>%
-  dplyr::select(datetime, chla_ugl, dil_fact_fluor)
+# ----02 create axis titles for figures----
 
-# ----02 read in all files with exo data during tank experiments----
-files2 <- list.files(here::here('data', 'exo'),
-                    pattern = "*_exo.csv", full.names = TRUE)
-exo_tbl <- sapply(files2, readr::read_csv, simplify = FALSE) %>%
-  dplyr::bind_rows(.id = "id") %>%
-  janitor::clean_names()
-
-# reorganize exo table to redo some column names and set datetime column
-exo_tbl <- exo_tbl %>%
-  dplyr::mutate(date = as.Date(date_mm_dd_yyyy, format = "%m/%d/%Y"),
-                datetime = lubridate::ymd_hms(paste(date, time_hh_mm_ss)),
-                temp = temp_u_00b0_c,
-                spcond = sp_cond_m_s_cm,
-                chlorophyll_ugl = chlorophyll_u_00b5_g_l) %>%
-    dplyr::select(-date_mm_dd_yyyy, -time_hh_mm_ss, -time_fract_sec,
-                  -fault_code, -temp_u_00b0_c, -chlorophyll_u_00b5_g_l,
-                  -sp_cond_m_s_cm)
-# remove files
-rm(files1, files2)
-
-# ----03 bind data together based on datetime stamps----
-chla_exo <- left_join(chla_tbl, exo_tbl, by = "datetime") %>%
-  mutate(mmdd = format(datetime,"%m-%d"))
-
-# remove exo and extraction tables
-rm(chla_tbl, exo_tbl)
-
-# ----04 create figures for tank experiments----
-# axis titles
 chla_title <- expression(paste("Chlorophyll ", italic("a "), mu*"g/L"))
 chla_exo_title <- expression(paste("Chlorophyll ", italic("a "), mu*"g/L", " EXO"))
 chla_extr_title <- expression(paste("Chlorophyll ", italic("a "), mu*"g/L", " Extracted"))
 
-# plot chla ext vs exo for single date
-# MUST CHANGE DATE IN THIS FIGURE
-# loop by date
+# ----03 plot chla ext vs exo for single date using LOOP----
 uniq_date <- unique(chla_exo$mmdd)
 
 for (i in uniq_date) {
@@ -69,7 +32,7 @@ chla_site_plot <- chla_exo %>%
          height = 4, width = 6, dpi = 120)
 }
 
-# put tank studies onto one figure with R2, p-value, and linear equation
+# ----04 put tank studies onto one figure with R2, p-value, and linear equation----
 chla_exo %>%
 ggpubr::ggscatter(y = "chlorophyll_ugl", x = "chla_ugl",
                   add = "reg.line", conf.int = TRUE, # add regression line and confidence interval
@@ -77,7 +40,7 @@ ggpubr::ggscatter(y = "chlorophyll_ugl", x = "chla_ugl",
   stat_cor(
     aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.y = 10.0) + # add R2 and p value
   stat_regline_equation(label.y = 9.5) + # add linear equation
-  theme_bw() +
+  theme_classic2() +
   theme(axis.text = element_text(color = "black", size = 12),
         axis.title = element_text(color = "black", size = 12),
         plot.caption = element_text(size = 8, face = "italic"),
@@ -89,7 +52,7 @@ ggpubr::ggscatter(y = "chlorophyll_ugl", x = "chla_ugl",
 ggsave(file = here::here('output', 'tank_plot_CHLa.png'),
        height = 4, width = 6, dpi = 120)
 
-# same figure as above but with colors applied
+# ----05 same figure as number 04, but with colors applied to the date points----
 chla_exo %>%
   ggpubr::ggscatter(y = "chlorophyll_ugl", x = "chla_ugl", color = "mmdd",
                     add = "reg.line", conf.int = TRUE, # add regression line and confidence interval
@@ -98,7 +61,7 @@ chla_exo %>%
   stat_cor(
     aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.y = 10.0) + # add R2 and p value
   stat_regline_equation(label.y = 9.5) + # add linear equation
-  theme_bw() +
+  theme_classic2() +
   theme(legend.position = "bottom",
         axis.text = element_text(color = "black", size = 12),
         axis.title = element_text(color = "black", size = 12),
@@ -111,7 +74,7 @@ chla_exo %>%
 ggsave(file = here::here('output', 'tank_plot_color_CHLa.png'),
        height = 4, width = 6, dpi = 120)
 
-# facet by date in tank studies
+# ----06 facet by date in tank studies with unique equations/lines each----
 chla_exo %>%
   ggplot(aes(y = chlorophyll_ugl, x = chla_ugl, color = mmdd)) +
   geom_point(size = 2) +
