@@ -8,11 +8,13 @@ chla_exo_title <- expression(paste("Chlorophyll ", italic("a "), mu*"g/L", " EXO
 chla_extr_title <- expression(paste("Chlorophyll ", italic("a "), mu*"g/L", " Extracted"))
 
 # ----03 plot chla ext vs exo for single date using LOOP----
-uniq_date <- unique(chla_exo$mmdd)
+chla_tank <- chla_exo %>%
+  filter(method == "tank")
+uniq_date <- unique(chla_tank$mmdd)
 
 for (i in uniq_date) {
-chla_site_plot <- chla_exo %>%
-  filter(mmdd == i & method == "tank") %>%
+  chla_date_plot <- chla_tank %>%
+  filter(mmdd == i) %>%
   ggpubr::ggscatter(y = "chlorophyll_ugl", x = "chla_ugl",
                     add = "reg.line", conf.int = TRUE,
                     add.params = list(color = "black", fill = "grey")) +
@@ -31,6 +33,8 @@ chla_site_plot <- chla_exo %>%
   ggsave(chla_site_plot, file = here::here('output', paste0(i, "_tank_chla.png")),
          height = 4, width = 6, dpi = 120)
 }
+
+rm(i, chla_tank, uniq_date, chla_date_plot)
 
 # ----04 put tank studies onto one figure with R2, p-value, and linear equation----
 chla_exo %>%
