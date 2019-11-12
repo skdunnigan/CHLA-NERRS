@@ -14,7 +14,8 @@ chla_diff %>%
             sd = sd(chla_diff, na.rm = TRUE)) %>%
   ggplot() +
   geom_bar(aes(x = method, y = mean), stat = "identity", width = 0.2, fill = "grey") +
-  geom_errorbar(aes(x = method, ymin = mean - sd, ymax = mean + sd), width = 0.2) +
+  geom_errorbar(aes(x = method, ymin = mean - sd, ymax = mean + sd), width = 0.1,
+                label = count) +
   scale_y_continuous(expand = c(0,0)) +
   chla_theme +
   labs(x = "Method",
