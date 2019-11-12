@@ -1,11 +1,18 @@
 # ----01 run script to create dataframe----
 source('R/02_exo_chla.R')
 
-# ----02 create axis titles for figures----
+# ----02 create axis titles and basic theme for figures----
 
 chla_title <- expression(paste("Chlorophyll ", italic("a "), mu*"g/L"))
 chla_exo_title <- expression(paste("Chlorophyll ", italic("a "), mu*"g/L", " EXO"))
 chla_extr_title <- expression(paste("Chlorophyll ", italic("a "), mu*"g/L", " Extracted"))
+
+# set standard theme for plots
+chla_theme <- theme_classic2() +
+  theme(axis.text = element_text(color = "black", size = 12),
+        axis.title = element_text(color = "black", size = 12),
+        plot.caption = element_text(size = 8, face = "italic"),
+        plot.subtitle = element_text(size = 10, face = "italic"))
 
 # ----03 plot chla ext vs exo for single date using LOOP----
 chla_tank <- chla_exo %>%
@@ -45,11 +52,7 @@ chla_exo %>%
   stat_cor(
     aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.y = 10.0) + # add R2 and p value
   stat_regline_equation(label.y = 9.5) + # add linear equation
-  theme_classic2() +
-  theme(axis.text = element_text(color = "black", size = 12),
-        axis.title = element_text(color = "black", size = 12),
-        plot.caption = element_text(size = 8, face = "italic"),
-        plot.subtitle = element_text(size = 10, face = "italic")) +
+  chla_theme +
   labs(y = chla_exo_title,
        x = chla_extr_title,
        title = "Chlorophyll Comparison",
@@ -67,12 +70,8 @@ chla_exo %>%
   stat_cor(
     aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.y = 10.0) + # add R2 and p value
   stat_regline_equation(label.y = 9.5) + # add linear equation
-  theme_classic2() +
-  theme(legend.position = "bottom",
-        axis.text = element_text(color = "black", size = 12),
-        axis.title = element_text(color = "black", size = 12),
-        plot.caption = element_text(size = 8, face = "italic"),
-        plot.subtitle = element_text(size = 10, face = "italic")) +
+  chla_theme +
+  theme(legend.position = "bottom") +
   labs(y = chla_exo_title,
        x = chla_extr_title,
        title = "Chlorophyll Comparison",
@@ -90,12 +89,8 @@ chla_exo %>%
     aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.y = 10) +
   stat_regline_equation(label.y = 9.5) +
   facet_wrap(~mmdd) +
-  theme_classic2() +
-  theme(legend.position = "none",
-        axis.text = element_text(color = "black", size = 12),
-        axis.title = element_text(color = "black", size = 12),
-        plot.caption = element_text(size = 8, face = "italic"),
-        plot.subtitle = element_text(size = 10, face = "italic")) +
+  chla_theme +
+  theme(legend.position = "none") +
   scale_color_brewer(type = "qual", palette = "Set1") +
   labs(y = chla_exo_title,
        x = chla_extr_title,
@@ -113,11 +108,7 @@ chla_exo %>%
   stat_cor(
     aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.x = 15, label.y = 13) + # add R2 and p value
   stat_regline_equation(label.x = 15, label.y = 12) + # add linear equation
-  theme_classic2() +
-  theme(axis.text = element_text(color = "black", size = 12),
-        axis.title = element_text(color = "black", size = 12),
-        plot.caption = element_text(size = 8, face = "italic"),
-        plot.subtitle = element_text(size = 10, face = "italic")) +
+  chla_theme +
   labs(y = chla_exo_title,
        x = chla_extr_title,
        title = "Chlorophyll Comparison",
@@ -134,12 +125,8 @@ chla_exo %>%
   stat_cor(
     aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.y = 25) + # add R2 and p value
   stat_regline_equation(label.y = 23) + # add linear equation
-  theme_classic2() +
-  theme(legend.position = "bottom",
-        axis.text = element_text(color = "black", size = 12),
-        axis.title = element_text(color = "black", size = 12),
-        plot.caption = element_text(size = 8, face = "italic"),
-        plot.subtitle = element_text(size = 10, face = "italic")) +
+  chla_theme +
+  theme(legend.position = "bottom") +
   labs(y = chla_exo_title,
        x = chla_extr_title,
        title = "Chlorophyll Comparison",
@@ -156,12 +143,8 @@ chla_exo %>%
     aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.y = 13.8) +
   stat_regline_equation(label.y = 12.8) +
   facet_wrap(~method, scales = "free_x") +
-  theme_classic2() +
-  theme(legend.position = "none",
-        axis.text = element_text(color = "black", size = 12),
-        axis.title = element_text(color = "black", size = 12),
-        plot.caption = element_text(size = 8, face = "italic"),
-        plot.subtitle = element_text(size = 10, face = "italic")) +
+  chla_theme +
+  theme(legend.position = "none") +
   scale_color_brewer(type = "qual", palette = "Set1") +
   labs(y = chla_exo_title,
        x = chla_extr_title,
