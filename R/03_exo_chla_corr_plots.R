@@ -1,4 +1,5 @@
 # ----01 run script to create dataframe----
+source('R/00_load_packages.R')
 source('R/02_exo_chla.R')
 
 # ----02 create axis titles and basic theme for figures----
