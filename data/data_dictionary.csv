@@ -1,4 +1,5 @@
-date_sampled,date_analyzed,method,run,sample_location
-8/20/2019,8/22/2019,tank,1,Usina Ramp
-10/22/2019,10/22/2019,tank,2,"Pellicer Creek, Faver-Dykes State Park"
-6/24/2019,6/27/2019,isco,1,"Pellicer Creek, Faver-Dykes State Park"
+date_sampled,date_analyzed,method,run,nerr,sample_location
+8/20/2019,8/22/2019,tank,1,gtm,Usina Ramp
+10/22/2019,10/22/2019,tank,2,gtm,"Pellicer Creek, Faver-Dykes State Park"
+6/24/2019,6/27/2019,isco,1,gtm,"Pellicer Creek, Faver-Dykes State Park"
+9/16/2019,9/16/2019,isco,1,wel,Inlet
