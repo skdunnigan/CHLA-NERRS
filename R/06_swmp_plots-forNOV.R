@@ -8,20 +8,26 @@ pc_nut <- nut %>%
   filter(site == "pellicer creek", month > 5) %>% # filter station name and all months with data
     select(site, station_code, date_sampled, month, day, cdmo_name, component_long, result, remark)
 
-fm_nut <- nut %>%
-  filter(site == "fort matanzas", month > 6) %>% # filter station name and all months with data
-  filter(cdmo_name == "UncCHLA_N") %>%
-  select(site, station_code, date_sampled, month, day, cdmo_name, component_long, result, remark)
-
 # ----03 plot each month separately and combine into stacked figure
 chla_title <- expression(paste("Chlorophyll ", italic("a "), mu*"g/L"))
 
+# wq %>%
+#   group_by(site_name, month, day) %>%
+#   select(-id, -f_record, -time_fract_sec, -fault_code, -battery) %>%
+#   summarise_all(list(~mean(., na.rm = TRUE), ~min(.), ~max(.))) %>%
+#
+#   ggplot() +
+#   geom_line(aes(x = datetime_max, y = chl_fluor_mean))
+
+
 ggplot() +
   geom_line(data = filter(wq, site_name == "pellicer creek", month > 5),
-            aes(x = datetime, y = chl_fluor)) +
+            aes(x = datetime, y = chl_fluor),
+            color = "grey", size = 1) +
   geom_point(data = filter(pc_nut, cdmo_name == "UncCHLA_N"),
-             aes(x = date_sampled, y = result), color = "green", size = 3) +
-  chla_theme
+             aes(x = date_sampled, y = result), color = "black", size = 3) +
+  xlim(as.POSIXct(c("2019-06-01", "2019-10-01"))) +
+  theme_cowplot()
 
 # just july
 jul <- ggplot() +
@@ -88,3 +94,4 @@ plot_grid(jul, aug, sep, ncol = 1,
           align = "v")
 ggsave(file = here::here('output', 'swmpcomparison_pc_CHLa.png'),
        height = 7, width = 6, dpi = 120)
+rm(jul, aug, sep)
