@@ -83,6 +83,6 @@ plot_grid(jul, aug, sep, ncol = 1,
           labels = "AUTO", # provides an automatic "tag" for each plot
           hjust = -5.5, # adjusts position of the tag to align in the plots
           align = "v")
-ggsave(file = here::here('output', 'swmpcomparison_pc_CHLa.png'),
+ggsave(file = here::here('output', 'gtm', 'swmpcomparison_pc_CHLa.png'),
        height = 7, width = 6, dpi = 120)
 rm(jul, aug, sep)
