@@ -29,16 +29,12 @@ for (i in uniq_date) {
   stat_regline_equation(
     aes(label = paste(..rr.label.., eq.label,sep = "~`, `~")), label.y.npc = c("top")
     ) +
-  theme_bw() +
-  theme(axis.text = element_text(color = "black", size = 12),
-        axis.title = element_text(color = "black", size = 12),
-        plot.caption = element_text(size = 8, face = "italic"),
-        plot.subtitle = element_text(size = 10, face = "italic")) +
+  theme_cowplot() +
   labs(y = chla_exo_title,
        x = chla_extr_title,
        title = "Chlorophyll Comparison",
        subtitle = i)
-  ggsave(chla_site_plot, file = here::here('output', paste0(i, "_tank_chla.png")),
+  ggsave(chla_date_plot, file = here::here('output', 'gtm', 'gtm_tank', paste0(i, "_tank_chla.png")),
          height = 4, width = 6, dpi = 120)
 }
 
@@ -58,7 +54,7 @@ chla_exo %>%
        x = chla_extr_title,
        title = "Chlorophyll Comparison",
        subtitle = "Tank Experiments")
-ggsave(file = here::here('output', 'tank_plot_CHLa.png'),
+ggsave(file = here::here('output', 'gtm', 'gtm_tank', 'tank_plot_CHLa.png'),
        height = 4, width = 6, dpi = 120)
 
 # ----05 same figure as number 04, but with colors applied to the date points----
@@ -77,7 +73,7 @@ chla_exo %>%
        x = chla_extr_title,
        title = "Chlorophyll Comparison",
        subtitle = "Tank Experiments")
-ggsave(file = here::here('output', 'tank_plot_color_CHLa.png'),
+ggsave(file = here::here('output', 'gtm', 'gtm_tank', 'tank_plot_color_CHLa.png'),
        height = 4, width = 6, dpi = 120)
 
 # ----06 facet by date in tank studies with unique equations/lines each----
@@ -97,7 +93,7 @@ chla_exo %>%
        x = chla_extr_title,
        title = "Chlorophyll Comparison",
        subtitle = "Tank Experiments")
-ggsave(file = here::here('output', "tank_facet_plot_CHLa.png"),
+ggsave(file = here::here('output', 'gtm', 'gtm_tank', "tank_facet_plot_CHLa.png"),
        height = 4, width = 6, dpi = 120)
 
 # ----07 isco only figure comparison ----
@@ -114,7 +110,7 @@ chla_exo %>%
        x = chla_extr_title,
        title = "Chlorophyll Comparison",
        subtitle = "ISCO Experiments")
-ggsave(file = here::here('output', 'isco_plot_CHLa.png'),
+ggsave(file = here::here('output', 'gtm', 'gtm_isco', 'isco_plot_CHLa.png'),
        height = 4, width = 6, dpi = 120)
 
 # ----08 isco and tank comparison----
@@ -132,7 +128,7 @@ chla_exo %>%
        x = chla_extr_title,
        title = "Chlorophyll Comparison",
        subtitle = "Tank and ISCO Experiments")
-ggsave(file = here::here('output', 'iscotank_plot_CHLa.png'),
+ggsave(file = here::here('output', 'gtm', 'iscotank_plot_CHLa.png'),
        height = 4, width = 6, dpi = 120)
 
 # ----09 isco and tank side-by-side comparison----
@@ -151,5 +147,5 @@ chla_exo %>%
        x = chla_extr_title,
        title = "Chlorophyll Comparison",
        subtitle = "Tank Experiments")
-ggsave(file = here::here('output', "iscotank_facet_plot_CHLa.png"),
+ggsave(file = here::here('output', 'gtm', "iscotank_facet_plot_CHLa.png"),
        height = 4, width = 6, dpi = 120)
