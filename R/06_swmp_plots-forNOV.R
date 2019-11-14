@@ -11,15 +11,6 @@ pc_nut <- nut %>%
 # ----03 plot each month separately and combine into stacked figure
 chla_title <- expression(paste("Chlorophyll ", italic("a "), mu*"g/L"))
 
-# wq %>%
-#   group_by(site_name, month, day) %>%
-#   select(-id, -f_record, -time_fract_sec, -fault_code, -battery) %>%
-#   summarise_all(list(~mean(., na.rm = TRUE), ~min(.), ~max(.))) %>%
-#
-#   ggplot() +
-#   geom_line(aes(x = datetime_max, y = chl_fluor_mean))
-
-
 ggplot() +
   geom_line(data = filter(wq, site_name == "pellicer creek", month > 5),
             aes(x = datetime, y = chl_fluor),
