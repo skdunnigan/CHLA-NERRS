@@ -53,7 +53,7 @@ chla_exo %>%
   stat_cor(
     aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.y = 10.0) + # add R2 and p value
   stat_regline_equation(label.y = 9.5) + # add linear equation
-  chla_theme +
+  theme_cowplot() +
   labs(y = chla_exo_title,
        x = chla_extr_title,
        title = "Chlorophyll Comparison",
@@ -71,7 +71,7 @@ chla_exo %>%
   stat_cor(
     aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.y = 10.0) + # add R2 and p value
   stat_regline_equation(label.y = 9.5) + # add linear equation
-  chla_theme +
+  theme_cowplot() +
   theme(legend.position = "bottom") +
   labs(y = chla_exo_title,
        x = chla_extr_title,
@@ -90,7 +90,7 @@ chla_exo %>%
     aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.y = 10) +
   stat_regline_equation(label.y = 9.5) +
   facet_wrap(~mmdd) +
-  chla_theme +
+  theme_cowplot() +
   theme(legend.position = "none") +
   scale_color_brewer(type = "qual", palette = "Set1") +
   labs(y = chla_exo_title,
@@ -109,7 +109,7 @@ chla_exo %>%
   stat_cor(
     aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.x = 15, label.y = 13) + # add R2 and p value
   stat_regline_equation(label.x = 15, label.y = 12) + # add linear equation
-  chla_theme +
+  theme_cowplot() +
   labs(y = chla_exo_title,
        x = chla_extr_title,
        title = "Chlorophyll Comparison",
@@ -126,7 +126,7 @@ chla_exo %>%
   stat_cor(
     aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.y = 25) + # add R2 and p value
   stat_regline_equation(label.y = 23) + # add linear equation
-  chla_theme +
+  theme_cowplot() +
   theme(legend.position = "bottom") +
   labs(y = chla_exo_title,
        x = chla_extr_title,
@@ -144,7 +144,7 @@ chla_exo %>%
     aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.y = 13.8) +
   stat_regline_equation(label.y = 12.8) +
   facet_wrap(~method, scales = "free_x") +
-  chla_theme +
+  theme_cowplot() +
   theme(legend.position = "none") +
   scale_color_brewer(type = "qual", palette = "Set1") +
   labs(y = chla_exo_title,
