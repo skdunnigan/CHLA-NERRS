@@ -36,53 +36,18 @@ No outputs except for the `chla_exo` data frame.
 
 This code creates plots! Lots of plots which are exported into the `/output` folder. There are currently nine sections of code:
 
-#### 1.  run script to create dataframe -
-this sources the `02_exo_chla.R` code to produce the `chla_exo` dataframe which is used in much of this code.
+### `03.2_exo_chla_corr_plots_all.R`
 
-#### 2.  create axis titles and basic theme for figures - 
-I want the micrograms per liter written out with the correct symbols.
+This code creates similar plots to the previous, however it does add data from other NERRs
 
-#### 3.  plot chla ext vs exo for single date using LOOP -
-this plots the extracted vs exo total algae sensor chlorophyll data for a single date using a for LOOP function. It produces several plots associated with each date of a tank experiment. *NOTE: this does not produce a plot for the ISCO-related data.*
+### `04_chla_diff.R`
 
-![03 plot example](output/10-22_tank_chla.png)
+This code calculates differences between in vivo sensor measurements with extracted (in vitro) chlorophyll measurements.
 
-#### 4.  put tank studies onto one figure with R2, p-value, and linear equation - 
-this combines the values from all the tank studies into one extracted vs. exo total algae sensor chlorophyll data plot with R2, p-value, confidence interval, and linear equation
+### `05_swmp_load.R`
 
-![04 plot example](output/tank_plot_CHLa.png)
+This code reads in gtmnerr swmp wq and nutrient data
 
-#### 5.  same figure as number 04, but with colors applied to the date points - 
-applies color to denote separate runs of the tank experiment (by date) but still produces a similar plot to the fourth step.
+### `06_swmp_plots-forNOV.R`
 
-![05 plot example](output/tank_plot_color_CHLa.png)
-
-#### 6.  facet by date in tank studies with unique equations/lines each -
-similar to the previous, except that the dates are also faceted into their own subplot with the associated R2, p-value, and linear equations included.
-
-![06 plot example](output/tank_facet_plot_CHLa.png)
-
-#### 7.  isco only figure comparison -
-this step will likely take on something similar to step number 3, however at the moment, 2019-11-11, there is only one isco comparison with data and thus this plot is only showing that day. Plot includes R2, p-value, confidence interval, and linear equation.
-
-![07 plot example](output/isco_plot_CHLa.png)
-
-#### 8.  isco and tank comparison -
-combines all data (tank and isco) into one plot with R2, p-value, confidence interval, and linear equation with colors denoting the method.
-
-![08 plot example](output/iscotank_plot_CHLa.png)
-
-#### 9.  isco and tank side-by-side comparison -
-data is faceted by method subplot
-
-![09 plot example](output/iscotank_facet_plot_CHLa.png)
-
-### `R/04_chla_diff.R`
-
-This script calculates the difference between chlorophyll values in the EXO Total Algae Sensor and associated extracted chlorophyll values. It then averages that difference between each method ("tank" and "isco") and calculates the associated standard deviation.
-
-*Outputs:*
-
-*   `difference_comparison_CHLa.png` 
-
-![difference in chlorophyll between exo and extraction](output/difference_comparison_CHLa.png)
+This code presents visuals of gtmnerr swmp data for the data update in November.
