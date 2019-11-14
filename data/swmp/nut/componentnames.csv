@@ -1,0 +1,42 @@
+component_long,cdmo_name
+o-phosphate-p,PO4F
+nitrite-n,NO2F
+nitrate-n,NO3F
+no2no3-n,NO23F
+fecal coliforms-membrane filter,FECCOL_CFU
+organic carbon,DOC
+tss,TSS
+ammonia-n,NH4F
+"kjeldahl nitrogen, filtered",TKN_F
+kjeldahl nitrogen,TKN
+total-p,TP
+escherichia coli-quanti-tray,ECOLI_MPN
+"2,4-d","2,4-d"
+acetaminophen,ACETA
+bentazon,bentazon
+carbamazepine,carbamazepine
+diuron,diuron
+fenuron,fenuron
+fluridone,fluridone
+hydrocodone,hydrocodone
+ibuprofen,ibuprofen
+imazapyr,imazapyr
+imidacloprid,imidacloprid
+linuron,linuron
+mcpp,mcpp
+naproxen,naproxen
+primidone,primidone
+pyraclostrobin,pyraclostrobin
+triclopyr,triclopyr
+sucralose,SUCRA
+"chlorophyll-a, corrected",CHLA_N
+"chlorophyll-a, uncorrected",UncCHLA_N
+phaeophytin-a,PHEA
+"chlorophyll-a, modified fluorometric",CHLAF
+acesulfame k,Acesulfame K
+endothall,Endothall
+ampa,AMPA
+glufosinate,Glufosinate
+glyphosate,Glyphosate
+enterococci-quanti-tray,ENTERO
+turbidity,Turb

@@ -1,0 +1,371 @@
+---
+title: "Refining techniques for high-frequency monitoring of chlorophyll a in the NERRS"
+subtitle: "Data Update November 2019"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 4
+    toc_float:
+      collapsed: no
+    theme: yeti
+    includes: 
+      after_body: footer.html
+---
+
+***
+## Background {.tabset .tabset-pills}
+
+### Project Objectives
+
+1.   Assess EXO Total Algae sensor performance via field- and laboratory-based comparisons with extracted Chl concentrations 
+
+2.   Identify possible sources of sensor interference and develop corrections
+
+3.   Develop recommendations for NERRS regarding inclusion of high-frequency chlorophyll measurements in SWMP
+
+### Approach 
+
+*    Site-specific, field- and laboratory-based comparisons of in vivo sensor measurements with extracted (in vitro) chlorophyll measurements.
+
+*    Laboratory studies to develop temperature corrections
+
+*    Laboratory studies to determine interference by and develop corrections for dissolved organic matter and turbidity.
+
+*    Time-series analysis of existing chlorophyll fluorescence datasets with core SWMP WQ data to assess signal to noise dynamics of in vivo measurements.
+
+*    Determine best practices for measuring and interpreting in vivo sensor data.
+
+### Products
+
+*    Peer-reviewed publication(s)
+*    Recommendations for NERRS regarding high-frequency chlorophyll monitoring
+*    updated SOPs for sampling and data analysis
+
+### Value and Applications
+
+Concentrations of chlorophyll a are used as a proxy for phytoplankton biomass by estuarine scientists to study eutrophication, food web dynamics, and harmful algae blooms. Traditionally, chlorophyll has been measured by filtering a sample of water and extracting pigments from the filter in a laboratory. Recently, sensor technology has been developing that allows high-frequency, in situ measurement of chlorophyll on the same YSI EXO sondes used in SWMP. While in situ measurements are related to extracted measurements, there are variations in the natural environment that cause inconsistencies in the relationship. Correction factors have been developed for some sensor brands, but currently, no tested relationships exist for the YSI EXO sensors.
+
+Chlorophyll measurements in estuarine waters are used by scientists and managers to assess eutrophication status. Currently, NERRS are required to measure extracted chlorophyll in monthly grab samples, but monthly measurements are not sufficient for tracking plankton dynamics, which fluctuate hourly. Inclusion of high-frequency chlorophyll monitoring in SWMP would provide managers with a more temporally-appropriate indicator of algal biomass and capture algal bloom phenomena currently being missed by monthly sampling. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(fig.align = "center")
+```
+
+```{r start, include = FALSE}
+source('R/00_load_packages.R')
+source('R/02_exo_chla.R')
+source('R/02.2_exo_chla_all.R')
+```
+
+```{r titles, include = FALSE, echo = FALSE}
+chla_title <- expression(paste("Chlorophyll ", italic("a "), mu*"g/L"))
+chla_exo_title <- expression(paste("Chlorophyll ", italic("a "), mu*"g/L", " EXO"))
+chla_extr_title <- expression(paste("Chlorophyll ", italic("a "), mu*"g/L", " Extracted"))
+```
+
+***
+## Data Updates
+
+### Time-series {.tabset .tabset-pills}
+
+The Guana Tolomato Matanzas NERR deployed EXO2 sondes equipped with the EXO Total Algae Sensor in June 2019. The results below show a timeseries of this sensor coupled with the results of the monthly nutrient data collected with an ISCO and subsequent grab samples for chlorophyll extractions at one site, Pellicer Creek. At the GTMNERR, extracted chlorophyll is performed by the Florida Department of Environmental Protection (FDEP) central lab using spectrophotometry (EPA 446.0 Revision 1.2); however, they have begun measurements with fluorometry with one sample each month. 
+
+```{r timeseries_dataload, echo = FALSE}
+source('R/05_swmp_load.R')
+
+pc_nut <- nut %>%
+  filter(site == "pellicer creek", month > 5) %>% # filter station name and all months with data
+    select(site, station_code, date_sampled, month, day, cdmo_name, component_long, result, remark)
+```
+
+#### Timeseries
+
+```{r timeseries, echo = FALSE, fig.cap = "Time-series of water quality data in Pellicer Creek with chlorophyll data collected by the EXO total algae sensor (light gray line) and extracted chlorophyll from monthly ISCO deployment (black points and dashed line). Extracted chlorophyll is performed by the Florida Department of Environmental Protection (FDEP) central lab using spectrophotometry (EPA 446.0 Revision 1.2). The orange point represents the one sample collected for fluorometry."}
+# just july
+jul <- ggplot() +
+  geom_line(data = filter(wq, site_name == "pellicer creek" & month == 7 & day == 14:15),
+            aes(x = datetime, y = chl_fluor),
+            color = "grey", size = 1.5) +
+  geom_point(data = filter(pc_nut, cdmo_name == "UncCHLA_N" & month == 7),
+             aes(x = date_sampled, y = result),
+             color = "black", size = 4) +
+  geom_line(data = filter(pc_nut, cdmo_name == "UncCHLA_N" & month == 7),
+             aes(x = date_sampled, y = result),
+             color = "black", size = 1, linetype = "dashed") +
+  geom_point(data = filter(pc_nut, cdmo_name == "CHLAF" & month == 7),
+             aes(x = date_sampled, y = result),
+             color = "orange", size = 4) +
+  xlim(as.POSIXct(c("2019-07-14 00:00", "2019-07-15 13:00"))) +
+  theme_cowplot() +
+  labs(x = "",
+       y = "")
+
+# just aug
+aug <- ggplot() +
+  geom_line(data = filter(wq, site_name == "pellicer creek" & month == 8 & day == 12:13),
+            aes(x = datetime, y = chl_fluor),
+            color = "grey", size = 1.5) +
+  geom_point(data = filter(pc_nut, cdmo_name == "UncCHLA_N" & month == 8),
+             aes(x = date_sampled, y = result),
+             color = "black", size = 4) +
+  geom_line(data = filter(pc_nut, cdmo_name == "UncCHLA_N" & month == 8),
+            aes(x = date_sampled, y = result),
+            color = "black", size = 1, linetype = "dashed") +
+  geom_point(data = filter(pc_nut, cdmo_name == "CHLAF" & month == 8),
+             aes(x = date_sampled, y = result),
+             color = "orange", size = 4) +
+  xlim(as.POSIXct(c("2019-08-12 00:00", "2019-08-13 13:00"))) +
+  theme_cowplot() +
+  labs(x = "",
+       y = chla_title)
+
+# just sep
+sep <- ggplot() +
+  geom_line(data = filter(wq, site_name == "pellicer creek" & month == 9 & day == 10:11),
+            aes(x = datetime, y = chl_fluor),
+            color = "grey", size = 1.5) +
+  geom_point(data = filter(pc_nut, cdmo_name == "UncCHLA_N" & month == 9),
+             aes(x = date_sampled, y = result),
+             color = "black", size = 4) +
+  geom_line(data = filter(pc_nut, cdmo_name == "UncCHLA_N" & month == 9),
+            aes(x = date_sampled, y = result),
+            color = "black", size = 1, linetype = "dashed") +
+  geom_point(data = filter(pc_nut, cdmo_name == "CHLAF" & month == 9),
+             aes(x = date_sampled, y = result),
+             color = "orange", size = 4) +
+  xlim(as.POSIXct(c("2019-09-10 00:00", "2019-09-11 13:00"))) +
+  theme_cowplot() +
+  labs(x = "DateTime",
+       y = "",
+       caption = "A = July , B = August, C = September 2019")
+
+# make a stacked grid
+plot_grid(jul, aug, sep, ncol = 1,
+          labels = "AUTO", # provides an automatic "tag" for each plot
+          hjust = -5.5, # adjusts position of the tag to align in the plots
+          align = "v")
+
+rm(jul, aug, sep)
+```
+
+#### With Salinity
+```{r timeseries2, echo = FALSE, fig.cap = "Time-series of water quality data in Pellicer Creek with chlorophyll data collected by the EXO total algae sensor (15-minute, light gray line) and extracted chlorophyll from monthly ISCO deployment (black points and dashed line). Extracted chlorophyll is performed by the Florida Department of Environmental Protection (FDEP) central lab using spectrophotometry (EPA 446.0 Revision 1.2). The orange point represents the one sample collected for fluorometry. Salinity (15-minute, ppt) data is included in the light blue line."}
+# just july
+jul <- ggplot() +
+  geom_line(data = filter(wq, site_name == "pellicer creek" & month == 7 & day == 14:15),
+            aes(x = datetime, y = chl_fluor),
+            color = "grey", size = 1.5) +
+  geom_line(data = filter(wq, site_name == "pellicer creek" & month == 7 & day == 14:15),
+            aes(x = datetime, y = sal),
+            color = "lightblue", size = 1.5) +
+  geom_point(data = filter(pc_nut, cdmo_name == "UncCHLA_N" & month == 7),
+             aes(x = date_sampled, y = result),
+             color = "black", size = 4) +
+  geom_line(data = filter(pc_nut, cdmo_name == "UncCHLA_N" & month == 7),
+            aes(x = date_sampled, y = result),
+            color = "black", size = 1, linetype = "dashed") +
+  geom_point(data = filter(pc_nut, cdmo_name == "CHLAF" & month == 7),
+             aes(x = date_sampled, y = result),
+             color = "orange", size = 4) +
+  xlim(as.POSIXct(c("2019-07-14 00:00", "2019-07-15 13:00"))) +
+  theme_cowplot() +
+  labs(x = "",
+       y = "")
+
+# just aug
+aug <- ggplot() +
+  geom_line(data = filter(wq, site_name == "pellicer creek" & month == 8 & day == 12:13),
+            aes(x = datetime, y = chl_fluor),
+            color = "grey", size = 1.5) +
+  geom_line(data = filter(wq, site_name == "pellicer creek" & month == 8 & day == 12:13),
+            aes(x = datetime, y = sal),
+            color = "lightblue", size = 1.5) +
+  geom_point(data = filter(pc_nut, cdmo_name == "UncCHLA_N" & month == 8),
+             aes(x = date_sampled, y = result),
+             color = "black", size = 4) +
+  geom_line(data = filter(pc_nut, cdmo_name == "UncCHLA_N" & month == 8),
+            aes(x = date_sampled, y = result),
+            color = "black", size = 1, linetype = "dashed") +
+  geom_point(data = filter(pc_nut, cdmo_name == "CHLAF" & month == 8),
+             aes(x = date_sampled, y = result),
+             color = "orange", size = 4) +
+  xlim(as.POSIXct(c("2019-08-12 00:00", "2019-08-13 13:00"))) +
+  theme_cowplot() +
+  labs(x = "",
+       y = chla_title)
+
+# just sep
+sep <- ggplot() +
+  geom_line(data = filter(wq, site_name == "pellicer creek" & month == 9 & day == 10:11),
+            aes(x = datetime, y = chl_fluor),
+            color = "grey", size = 1.5) +
+  geom_line(data = filter(wq, site_name == "pellicer creek" & month == 9 & day == 10:11),
+            aes(x = datetime, y = sal),
+            color = "lightblue", size = 1.5) +
+  geom_point(data = filter(pc_nut, cdmo_name == "UncCHLA_N" & month == 9),
+             aes(x = date_sampled, y = result),
+             color = "black", size = 4) +
+  geom_line(data = filter(pc_nut, cdmo_name == "UncCHLA_N" & month == 9),
+            aes(x = date_sampled, y = result),
+            color = "black", size = 1, linetype = "dashed") +
+  geom_point(data = filter(pc_nut, cdmo_name == "CHLAF" & month == 9),
+             aes(x = date_sampled, y = result),
+             color = "orange", size = 4) +
+  xlim(as.POSIXct(c("2019-09-10 00:00", "2019-09-11 13:00"))) +
+  theme_cowplot() +
+  labs(x = "DateTime",
+       y = "",
+       caption = "A = July , B = August, C = September 2019")
+
+# make a stacked grid
+plot_grid(jul, aug, sep, ncol = 1,
+          labels = "AUTO", # provides an automatic "tag" for each plot
+          hjust = -5.5, # adjusts position of the tag to align in the plots
+          align = "v")
+
+rm(jul, aug, sep)
+```
+
+### Laboratory-based tank studies {.tabset .tabset-pills}
+
+Site-specific, laboratory-based comparisons of in vivo sensor measurements with extracted (in vitro) chlorophyll measurements.
+
+#### Guana Tolomato Matanzas NERR
+
+To date, there have only been two laboratory-based tank studies conducted at the Guana Tolomato Matanzas NERR.
+
+```{r gtm_tank, echo = FALSE, fig.cap = "EXO Total Algae Sensor and extracted fluorometric chlorophyll laboratory-based comparison at GTMNERR"}
+chla_exo %>%
+  filter(method == "tank") %>%
+  ggpubr::ggscatter(y = "chlorophyll_ugl", x = "chla_ugl",
+                  add = "reg.line", conf.int = TRUE, # add regression line and confidence interval
+                  add.params = list(color = "black", fill = "grey")) + # adjust line and CI colors
+  stat_cor(
+    aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.y = 10.0) + # add R2 and p value
+  stat_regline_equation(label.y = 9.5) + # add linear equation
+  theme_cowplot() +
+  labs(y = chla_exo_title,
+       x = chla_extr_title)
+
+```
+
+#### Participating NERR data
+
+*currently no NERRS have submitted tank-related data to GTMNERR staff*
+
+### Field-based ISCO studies {.tabset .tabset-pills}
+
+Site-specific, field--based comparisons of in vivo sensor measurements with extracted (in vitro) chlorophyll measurements.
+
+#### Guana Tolomato Matanzas NERR
+
+To date, there has only been one field-based ISCO study conducted at the Guana Tolomato Matanzas NERR.
+
+```{r gtm_isco, echo = FALSE, fig.cap = "EXO Total Algae Sensor and extracted fluorometric chlorophyll field-based ISCO comparison at GTMNERR"}
+chla_exo %>%
+  filter(method == "isco") %>%
+  ggpubr::ggscatter(y = "chlorophyll_ugl", x = "chla_ugl",
+                    add = "reg.line", conf.int = TRUE, # add regression line and confidence interval
+                    add.params = list(color = "black", fill = "grey")) + # adjust line and CI colors
+  stat_cor(
+    aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")), label.x = 15, label.y = 13) + # add R2 and p value
+  stat_regline_equation(label.x = 15, label.y = 12) + # add linear equation
+  theme_cowplot() +
+  labs(y = chla_exo_title,
+       x = chla_extr_title)
+```
+
+#### Participating NERR data
+
+```{r all_isco1, echo = FALSE, fig.cap = "EXO Total Algae Sensor and extracted fluorometric chlorophyll field-based ISCO comparison at participating NERR sites. Data is to-date."}
+chla_exo_all %>%
+  filter(method == "isco") %>%
+  ggpubr::ggscatter(y = "chlorophyll_ugl", x = "chla_ugl",
+                    color = "nerr",
+                    add = "reg.line", conf.int = TRUE, # add regression line and confidence interval
+                    add.params = list(color = "black", fill = "grey")
+                    ) + # adjust line and CI colors
+  stat_cor(
+    aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~")),
+    label.x = 2, label.y = 20
+    )+ # add R2 and p value
+  stat_regline_equation(label.x = 2, label.y = 17) + # add linear equation
+  scale_color_discrete(name = "NERR") +
+  theme_cowplot() +
+  theme(legend.position = "bottom") +
+  labs(y = chla_exo_title,
+       x = chla_extr_title)
+```
+
+```{r all_isco2, echo = FALSE, fig.cap = "EXO Total Algae Sensor and extracted fluorometric chlorophyll field-based ISCO comparison at participating NERR sites. Data is to-date. Note the different axis scales!"}
+chla_exo_all %>%
+  filter(method == "isco") %>%
+  ggplot(aes(y = chlorophyll_ugl, x = chla_ugl, color = nerr)) +
+  geom_point(size = 2) +
+  geom_smooth(method = "lm", se = FALSE) +
+  stat_cor(
+    aes(label = paste(..rr.label.., ..p.label.., sep = "~`, `~"))) + # add R2 and p value
+  # stat_regline_equation() + # add linear equation
+  facet_wrap(~nerr, scales = "free") +
+  theme_cowplot() +
+  theme(legend.position = "none") +
+  labs(y = chla_exo_title,
+       x = chla_extr_title)
+```
+
+### Data Comparisons
+
+```{r calculations, include = FALSE}
+chla_diff <- chla_exo %>%
+  dplyr::mutate(chla_diff = chlorophyll_ugl - chla_ugl) %>%
+  dplyr::select(datetime, date_analyzed, date_sampled, mmdd, method,
+         chlorophyll_ugl, chla_ugl, chla_diff)
+
+chla_diff_all <- chla_exo_all %>%
+  dplyr::mutate(chla_diff = chlorophyll_ugl - chla_ugl) %>%
+  dplyr::select(datetime, date_analyzed, date_sampled, mmdd, method,
+                chlorophyll_ugl, chla_ugl, chla_diff)
+```
+
+```{r, echo = FALSE, fig.cap = "Average difference between in situ EXO Total Algae Sensor chlorophyll measurements and in vitro chlorophyll extractions with A. just data from the GTMNERR and B. with all participating NERR data (n=2)."}
+a <- chla_diff %>%
+  group_by(method) %>%
+  summarise(mean = mean(chla_diff, na.rm = TRUE),
+            sd = sd(chla_diff, na.rm = TRUE)) %>%
+  ggplot() +
+  geom_bar(aes(x = method, y = mean), stat = "identity", width = 0.2, fill = "grey") +
+  geom_errorbar(aes(x = method, ymin = mean - sd, ymax = mean + sd), width = 0.1,
+                label = count) +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_cowplot() +
+  labs(x = "Method",
+       y = expression(paste("Average Difference in Chlorophyll ", italic("a "), mu*"g/L")))
+
+b <- chla_diff_all %>%
+  group_by(method) %>%
+  summarise(mean = mean(chla_diff, na.rm = TRUE),
+            sd = sd(chla_diff, na.rm = TRUE)) %>%
+  ggplot() +
+  geom_bar(aes(x = method, y = mean), stat = "identity", width = 0.2, fill = "grey") +
+  geom_errorbar(aes(x = method, ymin = mean - sd, ymax = mean + sd), width = 0.1,
+                label = count) +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_cowplot() +
+  labs(x = "Method",
+       y = "")
+
+plot_grid(a, b, nrow = 1,
+          labels = "AUTO",
+          align = "h")
+
+rm(a, b, chla_diff, chla_diff_all)
+```
+
+***
+## Session Info
+
+```{r, echo = FALSE}
+sessionInfo()
+```
